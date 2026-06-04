@@ -16,6 +16,7 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
+    console.log("Registering with:", { fullName, email, password });
     try {
       const result = await register({
         fullName,
@@ -124,7 +125,7 @@ export default function RegisterPage() {
 
           <button
             onClick={handleRegister}
-            disabled={loading}
+            //disabled={loading}
             className="mt-6 w-full rounded-xl bg-amber-300/90 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:opacity-60"
           >
             {loading ? "Creating account..." : "Register"}

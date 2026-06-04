@@ -1,13 +1,35 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { login } from "@/services/authService";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await login({
+        username,
+        password,
+      });
+
+      localStorage.setItem("accessToken", result.accessToken);
+      localStorage.setItem("refreshToken", result.refreshToken);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      setError((err as Error)?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,20 +59,26 @@ export default function LoginPage() {
         <div className="p-8 md:p-12 bg-slate-950/60">
           <h2 className="text-2xl font-semibold">Sign in</h2>
           <p className="mt-2 text-sm text-slate-300/80">
-            Use your email and password to continue.
+            Use your username and password to continue.
           </p>
+
+          {error && (
+            <div className="mt-6 rounded-lg border border-rose-400/60 bg-rose-500/15 px-3 py-2 text-sm text-rose-100">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
               <label className="text-xs uppercase tracking-[0.2em] text-slate-300">
-                Email
+                Username
               </label>
               <input
-                type="email"
+                type="text"
                 className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-300/30"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                placeholder="yourname"
               />
             </div>
             <div>
@@ -67,9 +95,10 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full rounded-xl bg-sky-300/90 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-300"
+              disabled={loading}
+              className="w-full rounded-xl bg-sky-300/90 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-300 disabled:opacity-60"
             >
-              Sign in
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
           <p className="mt-4 text-xs text-slate-400">
