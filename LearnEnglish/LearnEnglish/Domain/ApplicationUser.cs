@@ -11,5 +11,7 @@ namespace LearnEnglish.Domain
         public string? LearningGoal { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public ICollection<Session> Sessions { get; set; } = new List<Session>();
     }
 }

@@ -12,5 +12,7 @@ namespace LearnEnglish.Infrastructure
         {
         }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public DbSet<Session> Sessions { get; set; }
     }
 }

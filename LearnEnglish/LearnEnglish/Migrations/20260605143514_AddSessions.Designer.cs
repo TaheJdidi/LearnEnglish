@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LearnEnglish.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260601150915_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260605143514_AddSessions")]
+    partial class AddSessions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -285,6 +285,17 @@ namespace LearnEnglish.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("LearnEnglish.Domain.Session", b =>
+                {
+                    b.HasOne("LearnEnglish.Domain.ApplicationUser", "User")
+                        .WithMany("Sessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -336,15 +347,9 @@ namespace LearnEnglish.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LearnEnglish.Domain.Session", b =>
+            modelBuilder.Entity("LearnEnglish.Domain.ApplicationUser", b =>
                 {
-                    b.HasOne("LearnEnglish.Domain.ApplicationUser", "User")
-                        .WithMany("Sessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                    b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618
         }
