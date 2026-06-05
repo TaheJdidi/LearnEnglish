@@ -2,35 +2,38 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { login } from "@/services/authService";
-
+import { loginApi } from "@/services/authService";
+import { useAuth } from "@/contexts/AuthContext";
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-
+  const { login } = useAuth();
+  
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
+  event.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const result = await login({
-        username,
-        password,
-      });
+  try {
+    const result = await loginApi({
+      email,
+      password,
+    });
 
-      localStorage.setItem("accessToken", result.accessToken);
-      localStorage.setItem("refreshToken", result.refreshToken);
-      router.push("/dashboard");
-    } catch (err: unknown) {
-      setError((err as Error)?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
+    login(result.accessToken);
+    localStorage.setItem("refreshToken", result.refreshToken);
+
+    router.push("/dashboard");
+
+  } catch (err: unknown) {
+    setError((err as Error)?.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,_#111827,_#0b1220_45%,_#05070b_100%)] px-4 py-10 text-slate-100">
@@ -71,14 +74,15 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
               <label className="text-xs uppercase tracking-[0.2em] text-slate-300">
-                Username
+                Email
               </label>
               <input
-                type="text"
+                type="email"
                 className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-300/30"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                placeholder="yourname"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="you@example.com"
+                autoComplete="email"
               />
             </div>
             <div>

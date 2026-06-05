@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { register } from "@/services/authService";
-
+import { useAuth } from "@/contexts/AuthContext";
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const { login } = useAuth();
   const handleRegister = async () => {
     setLoading(true);
     setError("");
@@ -24,8 +24,8 @@ export default function RegisterPage() {
         password,
       });
 
-      localStorage.setItem("accessToken", result.accessToken);
       localStorage.setItem("refreshToken", result.refreshToken);
+      login(result.accessToken);
       router.push("/home");
       console.log(result);
     } catch (err: unknown) {
